@@ -34,7 +34,7 @@
                 <dragablz:InterTabController Partition="{StaticResource Partition}" />
             </dragablz:TabablzControl.InterTabController>
             <metro:MetroTabItem Header="Параметры модели">
-                <Grid ShowGridLines="True">
+                <Grid ShowGridLines="False">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
@@ -191,7 +191,24 @@
                 </Grid>
             </metro:MetroTabItem>
             <metro:MetroTabItem Header="Данные">
-                
+                <Grid ShowGridLines="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="400"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ListView Grid.Column="0" Grid.Row="0" x:Name="DataLV">
+                        <ListView.View>
+                            <GridView x:Name="DataGV">
+
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left">Сохранить</Button>
+                </Grid>
             </metro:MetroTabItem>
         </dragablz:TabablzControl>
      </dockablz:Layout>
