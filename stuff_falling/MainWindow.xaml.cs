@@ -31,32 +31,41 @@ namespace stuff_falling
             InitializeComponent();
             Model.CalculationCompleted += OnCalculationComplete;
             DataContext = this;
+            Series = HeightSeries;
         }
 
         public List<string> Labels { get; set; } = new List<string>();
 
         public SeriesCollection Series { get; set; } = new SeriesCollection();
 
+        public SeriesCollection HeightSeries { get; set; } = new SeriesCollection();
+        public SeriesCollection SpeedSeries { get; set; } = new SeriesCollection();
+        public SeriesCollection AccelerationSeries { get; set; } = new SeriesCollection();
+
         private delegate void UpdateDelegate(Model.Result result);
 
-        private void AddSeries(List<double> values, String title)
+        private void UpdateSeries(SeriesCollection series, List<double> values)
         {
-            Series.Add(new LineSeries
+            LineSeries lineSeries = new LineSeries
             {
-                Title = title,
+                Title = (Series.Count + 1).ToString(),
                 Values = new ChartValues<double>(values),
                 LineSmoothness = 0,
                 PointGeometry = null,
                 Fill = new SolidColorBrush()
-            });
+            };
+            if (series.Count > 0)
+                series[series.Count - 1] = lineSeries;
+            else
+                series.Add(lineSeries);
         } 
 
         private void UpdateData(Model.Result result)
         {
             Series.Clear();
-            AddSeries(result.Height, "Height");
-            AddSeries(result.Speed, "Speed");
-            AddSeries(result.Acceleration, "Acceleration");
+            UpdateSeries(HeightSeries, result.Height);
+            UpdateSeries(SpeedSeries, result.Speed);
+            UpdateSeries(AccelerationSeries, result.Acceleration);
             Labels.Clear();
             Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
         }
