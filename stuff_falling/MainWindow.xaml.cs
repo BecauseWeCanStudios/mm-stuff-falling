@@ -17,7 +17,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LiveCharts;
 using LiveCharts.Wpf;
+using LiveCharts.Charts;
 using MahApps.Metro.Controls;
+using LiveCharts.Wpf.Charts.Base;
+using System.Windows.Media.Animation;
 
 namespace stuff_falling
 {
@@ -40,6 +43,12 @@ namespace stuff_falling
         public SeriesCollection SpeedSeries { get; set; } = new SeriesCollection();
         public SeriesCollection AccelerationSeries { get; set; } = new SeriesCollection();
 
+        private List<Ellipse> Ellipsies = new List<Ellipse>();
+        private List<DoubleAnimationUsingKeyFrames> Animations = new List<DoubleAnimationUsingKeyFrames>();
+
+        private bool AddEllipse = true;
+        private int index = 0;
+
         private delegate void UpdateDelegate(Model.Result result);
 
         private void UpdateSeries(SeriesCollection series, List<double> values)
@@ -59,11 +68,30 @@ namespace stuff_falling
 
         private void UpdateData(Model.Result result)
         {
+            if (AddEllipse)
+            {
+                Ellipsies.Add(new Ellipse() { Width = 30, Height = 30 });
+                Canvas.Children.Add(Ellipsies.Last());
+                Canvas.SetLeft(Canvas.Children[Canvas.Children.Count - 1], 625);
+                Canvas.SetTop(Canvas.Children[Canvas.Children.Count - 1], 115);
+                Animations.Add(new DoubleAnimationUsingKeyFrames());
+                AddEllipse = false;
+            }
             UpdateSeries(HeightSeries, result.Height);
             UpdateSeries(SpeedSeries, result.Speed);
             UpdateSeries(AccelerationSeries, result.Acceleration);
             Labels.Clear();
             Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
+            Ellipsies.Last().Fill = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))]);
+            DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
+            double height = Convert.ToDouble(PassDefaultIfEmpty(StartHeight.Text));
+            foreach (var it in HeightSeries.Last().Values)
+            {
+                anim.KeyFrames.Add(new LinearDoubleKeyFrame(575 - 455 * (double)it / height));
+            }
+            anim.Duration = new Duration(new TimeSpan(0, 0, 5));
+            Animations[Animations.Count - 1] = anim;
+            ++index;
         }
 
         private void OnCalculationComplete(object sender, Model.Result result)
@@ -161,7 +189,16 @@ namespace stuff_falling
             HeightSeries.Insert(HeightSeries.Count - 1, HeightSeries.Last());
             SpeedSeries.Insert(SpeedSeries.Count - 1, SpeedSeries.Last());
             AccelerationSeries.Insert(AccelerationSeries.Count - 1, AccelerationSeries.Last());
+            Ellipsies.Insert(Ellipsies.Count - 1, Ellipsies.Last());
+            Animations.Insert(Animations.Count - 1, Animations.Last());
+            AddEllipse = true;
             Update();
+        }
+
+        private void StartAnimationButton_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < Ellipsies.Count; ++i)
+                Ellipsies[i].BeginAnimation(Canvas.TopProperty, Animations[i]);
         }
     }
 

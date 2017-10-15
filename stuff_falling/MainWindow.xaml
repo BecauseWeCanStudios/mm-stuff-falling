@@ -13,7 +13,7 @@
         xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Модель падения тела" Height="600" Width="1200"
+        Title="Модель падения тела" Height="720" Width="1280"
         GlowBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -208,6 +208,29 @@
                         </ListView.View>
                     </ListView>
                     <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left">Сохранить</Button>
+                </Grid>
+            </metro:MetroTabItem>
+            <metro:MetroTabItem Header="Анимация">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="StartAnimationButton" Grid.Row ="0" Grid.Column="0" HorizontalAlignment="Left" Click="StartAnimationButton_Click">Начать</Button>
+                    <Canvas Name="Canvas" VerticalAlignment="Center" HorizontalAlignment="Center" Width="1280" Height="720" Grid.Row ="0" Grid.Column="0" Grid.RowSpan="2">
+                        <Line X1="640" X2="640" Y1="120" Y2="600"
+                        Stroke="Black"
+                        StrokeThickness="10" />
+                        <Line X1="620" X2="660" Y1="120" Y2="120"
+                        Stroke="Black"
+                        StrokeThickness="10" />
+                        <Line X1="620" X2="660" Y1="600" Y2="600"
+                        Stroke="Black"
+                        StrokeThickness="10" />
+                    </Canvas>
                 </Grid>
             </metro:MetroTabItem>
         </dragablz:TabablzControl>
