@@ -152,6 +152,7 @@ namespace stuff_falling
             HeightSeries.Insert(HeightSeries.Count - 1, HeightSeries.Last());
             SpeedSeries.Insert(SpeedSeries.Count - 1, SpeedSeries.Last());
             AccelerationSeries.Insert(AccelerationSeries.Count - 1, AccelerationSeries.Last());
+            Update();
         }
     }
 
