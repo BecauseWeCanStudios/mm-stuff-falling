@@ -39,7 +39,7 @@ namespace stuff_falling
             if (parameters.IsConstGravitationalAcceleration)
                 gravity = y => -9.81;
             else 
-                gravity = y => -9.81 / Math.Pow(1 - y / 6371000, 2);
+                gravity = y => -9.81 / Math.Pow(1 + y / 6371000, 2);
             Func<double, double> archimedes = (y) => 0;
             Func<double, double> drag = (v) => 0;
             double sphereVolume = 4 / 3 * Math.PI * Math.Pow(parameters.SphereRadius, 3);
