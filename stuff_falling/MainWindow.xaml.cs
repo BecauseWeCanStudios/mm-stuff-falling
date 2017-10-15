@@ -29,13 +29,66 @@ namespace stuff_falling
         public MainWindow()
         {
             InitializeComponent();
+            Model.CalculationCompleted += OnCalculationComplete;
+            DataContext = this;
         }
 
         public List<string> Labels { get; set; } = new List<string>();
 
         public SeriesCollection Series { get; set; } = new SeriesCollection();
 
-        private void Update() {}
+        private delegate void UpdateDelegate(Model.Result result);
+
+        private void AddSeries(List<double> values, String title)
+        {
+            Series.Add(new LineSeries
+            {
+                Title = title,
+                Values = new ChartValues<double>(values),
+                LineSmoothness = 0,
+                PointGeometry = null,
+                Fill = new SolidColorBrush()
+            });
+        } 
+
+        private void UpdateData(Model.Result result)
+        {
+            Series.Clear();
+            AddSeries(result.Height, "Height");
+            AddSeries(result.Speed, "Speed");
+            AddSeries(result.Acceleration, "Acceleration");
+            Labels.Clear();
+            Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
+        }
+
+        private void OnCalculationComplete(object sender, Model.Result result)
+        {
+            Dispatcher.Invoke(new UpdateDelegate(UpdateData), result);
+        }
+
+        private void Update()
+        {
+            List<Model.Forces> forces = new List<Model.Forces>();
+            if (Archimedes.IsChecked.Value)
+                forces.Add(Model.Forces.Archimedes);
+            if (LiquidFriction.IsChecked.Value)
+                forces.Add(Model.Forces.Viscosity);
+            if (GasDrag.IsChecked.Value)
+                forces.Add(Model.Forces.Drag);
+            Model.BeginCalculate(new Model.Parameters()
+            {
+                Forces = forces,
+                Height = Convert.ToDouble(StartHeight.Text),
+                Speed = Convert.ToDouble(StartSpeed.Text),
+                EndTime = Convert.ToDouble(EndTime.Text),
+                SegmentCount = Convert.ToDouble(PointNumber.Text),
+                IsConstGravitationalAcceleration = GIsConst.IsChecked.Value,
+                SphereRadius = Convert.ToDouble(BallRadius.Text),
+                SphereMass = Convert.ToDouble(BallMass.Text),
+                EnviromentDensity = Convert.ToDouble(EnvDensity.Text),
+                EnviromentViscosity = Convert.ToDouble(EnvViscosity.Text)
+            });
+        }
 
         private void DoubleTBPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
