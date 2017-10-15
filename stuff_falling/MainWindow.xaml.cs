@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LiveCharts;
+using LiveCharts.Wpf;
 using MahApps.Metro.Controls;
 
 namespace stuff_falling
@@ -27,6 +30,10 @@ namespace stuff_falling
         {
             InitializeComponent();
         }
+
+        public List<string> Labels { get; set; } = new List<string>();
+
+        public SeriesCollection Series { get; set; } = new SeriesCollection();
 
         private void Update() {}
 
@@ -61,6 +68,25 @@ namespace stuff_falling
         private void TB_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = e.Key == Key.Space;
+        }
+
+        private void CheckboxOnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                Update();
+            }
+        }
+
+        private void ListBox_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = ItemsControl.ContainerFromElement(ListBox, (DependencyObject)e.OriginalSource) as ListBoxItem;
+            if (item == null)
+                return;
+            var series = (LineSeries)item.Content;
+            series.Visibility = series.Visibility == Visibility.Visible
+                ? Visibility.Hidden
+                : Visibility.Visible;
         }
     }
 
@@ -152,6 +178,21 @@ namespace stuff_falling
                 m = 1;
             }
             return base.Convert(new object[] { m / v }, targetType, parameter, culture);
+        }
+    }
+
+    public class OpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (Visibility)value == Visibility.Visible
+                ? 1d
+                : .2d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
