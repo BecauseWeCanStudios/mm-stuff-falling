@@ -10,6 +10,7 @@
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:qc="clr-namespace:QuickConverter;assembly=QuickConverter"
+        xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Модель падения тела" Height="600" Width="1200"
@@ -24,6 +25,8 @@
         <system:String x:Key="Partition">QuickStart</system:String>
         <BooleanToVisibilityConverter x:Key="B2V" />
         <local:StringFormatConverter x:Key="StringFormatConverter"></local:StringFormatConverter>
+        <local:RadiusToVolumeConverter x:Key="RadiusToVolumeConverter"></local:RadiusToVolumeConverter>
+        <local:RadiusMassToDensityConverter x:Key="RadiusMassToDensityConverter"></local:RadiusMassToDensityConverter>
     </metro:MetroWindow.Resources>
     <dockablz:Layout Partition="{StaticResource Partition}">
         <dragablz:TabablzControl ConsolidateOrphanedItems="True">
@@ -88,8 +91,16 @@
                     <CheckBox x:Name="LiquidFriction" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0" IsEnabled="{qc:Binding '!$P', P={Binding ElementName=GasDrag, Path=IsChecked}}"></CheckBox>
                     <CheckBox x:Name="GasDrag" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0" IsEnabled="{qc:Binding '!$P', P={Binding ElementName=LiquidFriction, Path=IsChecked}}"></CheckBox>
 
-                    <Label Grid.Row="7" Grid.Column="3" Content="{Binding ElementName=BallRadius, Path=Text, Converter={StaticResource StringFormatConverter}, ConverterParameter=Объем шара: {0:e3} }"></Label>
-                    <Label Content="Плотность шара" Grid.Row="8" Grid.Column="3"></Label>
+<!--                    <Label Grid.Row="7" Grid.Column="3" Content="{Binding ElementName=BallRadius, Path=Text, Converter={StaticResource StringFormatConverter}, ConverterParameter=Объем шара: {0:e3} }"></Label>-->
+                    <Label Grid.Row="7" Grid.Column="3" Content="{Binding ElementName=BallRadius, Path=Text, Converter={StaticResource RadiusToVolumeConverter}, ConverterParameter=Объём шара: {0:N2}}"></Label>
+                    <Label Grid.Row="8" Grid.Column="3">
+                        <Label.Content>
+                            <MultiBinding Converter="{StaticResource RadiusMassToDensityConverter}" ConverterParameter="Плотность шара: {0:N2}">
+                                <Binding ElementName="BallRadius" Path="Text"></Binding>
+                                <Binding ElementName="BallMass" Path="Text"></Binding>
+                            </MultiBinding>
+                        </Label.Content>
+                    </Label>
                 </Grid>
             </metro:MetroTabItem>
             <metro:MetroTabItem Header="График"></metro:MetroTabItem>
@@ -99,3 +110,4 @@
         </dragablz:TabablzControl>
      </dockablz:Layout>
 </metro:MetroWindow>
+

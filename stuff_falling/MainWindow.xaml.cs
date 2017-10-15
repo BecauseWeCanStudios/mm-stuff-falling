@@ -67,7 +67,7 @@ namespace stuff_falling
     [ValueConversion(typeof(object), typeof(string))]
     public class StringFormatConverter : IValueConverter, IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return Convert(new object[] { value }, targetType, parameter, culture);
         }
@@ -78,7 +78,7 @@ namespace stuff_falling
             return DependencyProperty.UnsetValue;
         }
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -107,4 +107,52 @@ namespace stuff_falling
             return null;
         }
     }
+
+    [ValueConversion(typeof(object), typeof(string))]
+    public class RadiusToVolumeConverter : StringFormatConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double r;
+            try
+            {
+                r = Double.Parse(value.ToString());
+            }
+            catch (FormatException e)
+            {
+                r = 1;
+            }
+            double v = Math.Pow(r, 3) * Math.PI * 4.0 / 3.0;
+            return base.Convert(new object[] { v }, targetType, parameter, culture);
+        }
+    }
+
+    [ValueConversion(typeof(object), typeof(string))]
+    public class RadiusMassToDensityConverter : StringFormatConverter
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            double r;
+            try
+            {
+                r = Double.Parse(values[0].ToString());
+            }
+            catch (FormatException e)
+            {
+                r = 1;
+            }
+            double v = Math.Pow(r, 3) * Math.PI * 4.0 / 3.0;
+            double m;
+            try
+            {
+                m = Double.Parse(values[1].ToString());
+            }
+            catch (FormatException e)
+            {
+                m = 1;
+            }
+            return base.Convert(new object[] { m / v }, targetType, parameter, culture);
+        }
+    }
+
 }
