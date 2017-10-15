@@ -71,6 +71,15 @@ namespace stuff_falling
             Dispatcher.Invoke(new UpdateDelegate(UpdateData), result);
         }
 
+        private String PassDefaultIfEmpty(String s)
+        {
+            if (String.IsNullOrEmpty(s))
+                return "1";
+            if (s == "-" || s == "+")
+                return s + "1";
+            return s;
+        }
+
         private void Update()
         {
             List<Model.Forces> forces = new List<Model.Forces>();
@@ -83,22 +92,22 @@ namespace stuff_falling
             Model.BeginCalculate(new Model.Parameters()
             {
                 Forces = forces,
-                Height = Convert.ToDouble(StartHeight.Text),
-                Speed = Convert.ToDouble(StartSpeed.Text),
-                EndTime = Convert.ToDouble(EndTime.Text),
-                SegmentCount = Convert.ToDouble(PointNumber.Text),
+                Height = Convert.ToDouble(PassDefaultIfEmpty(StartHeight.Text)),
+                Speed = Convert.ToDouble(PassDefaultIfEmpty(StartSpeed.Text)),
+                EndTime = Convert.ToDouble(PassDefaultIfEmpty(EndTime.Text)),
+                SegmentCount = Convert.ToDouble(PassDefaultIfEmpty(PointNumber.Text)),
                 IsConstGravitationalAcceleration = GIsConst.IsChecked.Value,
-                SphereRadius = Convert.ToDouble(BallRadius.Text),
-                SphereMass = Convert.ToDouble(BallMass.Text),
-                EnviromentDensity = Convert.ToDouble(EnvDensity.Text),
-                EnviromentViscosity = Convert.ToDouble(EnvViscosity.Text)
+                SphereRadius = Convert.ToDouble(PassDefaultIfEmpty(BallRadius.Text)),
+                SphereMass = Convert.ToDouble(PassDefaultIfEmpty(BallMass.Text)),
+                EnviromentDensity = Convert.ToDouble(PassDefaultIfEmpty(EnvDensity.Text)),
+                EnviromentViscosity = Convert.ToDouble(PassDefaultIfEmpty(EnvViscosity.Text))
             });
         }
 
         private void DoubleTBPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             System.Globalization.CultureInfo ci = System.Threading.Thread.CurrentThread.CurrentCulture;
-            string decimalSeparator = ci.NumberFormat.CurrencyDecimalSeparator;
+            string decimalSeparator = ci.NumberFormat.NumberDecimalSeparator;
             if (decimalSeparator == ".")
             {
                 decimalSeparator = "\\" + decimalSeparator;

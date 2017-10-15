@@ -151,12 +151,12 @@
                     <StackPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Top" Style="{StaticResource GlobalStackPanelStyle}" Margin="0, 20, 0, 20" MaxHeight="260">
                         <StackPanel Margin="10">
                             <Label Content="Параметр"/>
-                            <RadioButton Name="HeightRadioButton" GroupName="Plot" Content="Высота" IsChecked="True" Margin="3"/>
-                            <RadioButton Name="SpeedRadioButton" GroupName="Plot" Content="Скорость" Margin="3"/>
-                            <RadioButton Name="AccelerationRadioButton" GroupName="Plot" Content="Ускорение" Margin="3"/>
+                            <RadioButton Name="HeightRadioButton" GroupName="Plot" Content="Высота" IsChecked="True" Margin="3" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <RadioButton Name="SpeedRadioButton" GroupName="Plot" Content="Скорость" Margin="3" Foreground="{DynamicResource MaterialDesignBody}"/>
+                            <RadioButton Name="AccelerationRadioButton" GroupName="Plot" Content="Ускорение" Margin="3" Foreground="{DynamicResource MaterialDesignBody}"/>
                             <Separator/>
                             <Label Content="Эксперименты"/>
-                            <ListBox Name="HeightListBox" ItemsSource="{Binding HeightSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=HeightRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100">
+                            <ListBox Name="HeightListBox" ItemsSource="{Binding HeightSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=HeightRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100" ItemContainerStyle="{StaticResource GlobalListBoxItemStype}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding (lvc:LineSeries.Title)}" 
@@ -164,22 +164,9 @@
                                                Opacity="{Binding (lvc:LineSeries.Visibility), Converter={StaticResource OpacityConverter}}"/>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                    <ContentPresenter />
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="Margin" Value="5, 2.5, 5, 2.5"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
                             </ListBox>
 
-                            <ListBox Name="SpeedListBox" ItemsSource="{Binding SpeedSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=SpeedRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100">
+                            <ListBox Name="SpeedListBox" ItemsSource="{Binding SpeedSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=SpeedRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100" ItemContainerStyle="{StaticResource GlobalListBoxItemStype}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding (lvc:LineSeries.Title)}" 
@@ -187,22 +174,9 @@
                                                Opacity="{Binding (lvc:LineSeries.Visibility), Converter={StaticResource OpacityConverter}}"/>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                    <ContentPresenter />
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="Margin" Value="5, 2.5, 5, 2.5"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
                             </ListBox>
 
-                            <ListBox Name="AccelerationListBox" ItemsSource="{Binding AccelerationSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=AccelerationRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100">
+                            <ListBox Name="AccelerationListBox" ItemsSource="{Binding AccelerationSeries}" PreviewMouseDown="ListBox_OnPreviewMouseDown" BorderThickness="0" Background="Transparent" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" VerticalContentAlignment="Top" Visibility="{Binding ElementName=AccelerationRadioButton, Path=IsChecked, Converter={StaticResource B2V}}" MaxHeight="100" ItemContainerStyle="{StaticResource GlobalListBoxItemStype}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding (lvc:LineSeries.Title)}" 
@@ -210,23 +184,10 @@
                                                Opacity="{Binding (lvc:LineSeries.Visibility), Converter={StaticResource OpacityConverter}}"/>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                    <ContentPresenter />
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="Margin" Value="5, 2.5, 5, 2.5"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
                             </ListBox>
                         </StackPanel>
                     </StackPanel>
-                   
+
                 </Grid>
             </metro:MetroTabItem>
             <metro:MetroTabItem Header="Данные">
