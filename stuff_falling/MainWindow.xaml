@@ -9,6 +9,7 @@
         xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:qc="clr-namespace:QuickConverter;assembly=QuickConverter"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Модель падения тела" Height="600" Width="1200"
@@ -21,15 +22,80 @@
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
     <metro:MetroWindow.Resources>
         <system:String x:Key="Partition">QuickStart</system:String>
+        <BooleanToVisibilityConverter x:Key="B2V" />
+        <local:StringFormatConverter x:Key="StringFormatConverter"></local:StringFormatConverter>
     </metro:MetroWindow.Resources>
     <dockablz:Layout Partition="{StaticResource Partition}">
         <dragablz:TabablzControl ConsolidateOrphanedItems="True">
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController Partition="{StaticResource Partition}" />
             </dragablz:TabablzControl.InterTabController>
-            <metro:MetroTabItem Header="Параметры модели"></metro:MetroTabItem>
+            <metro:MetroTabItem Header="Параметры модели">
+                <Grid ShowGridLines="True">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"></ColumnDefinition>
+                        <ColumnDefinition Width="30"></ColumnDefinition>
+                        <ColumnDefinition Width="80"></ColumnDefinition>
+                        <ColumnDefinition Width="220"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="Уравнение модели:" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
+                    <Label Content="Начальная высота" Grid.Row="2" Grid.Column="0"></Label>
+                    <Label Content="Начальная скорость" Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Content="Конец отсчета" Grid.Row="4" Grid.Column="0"></Label>
+                    <Label Content="Количество точек" Grid.Row="5" Grid.Column="0"></Label>
+                    <Label Content="Сила тяжести постоянна" Grid.Row="6" Grid.Column="0"></Label>
+                    <Label Content="Радиус шара" Grid.Row="7" Grid.Column="0"></Label>
+                    <Label Content="Масса шара" Grid.Row="8" Grid.Column="0"></Label>
+                    <Label Content="Плотность среды" Grid.Row="9" Grid.Column="0"></Label>
+                    <Label Content="Вязкость среды" Grid.Row="10" Grid.Column="0"></Label>
+                    <Label Content="Сила Архимеда" Grid.Row="11" Grid.Column="0"></Label>
+                    <Label Content="Сила сопротивления жидкости" Grid.Row="12" Grid.Column="0"></Label>
+                    <Label Content="Сила сопротивления газа" Grid.Row="13" Grid.Column="0"></Label>
+
+                    <TextBox x:Name="StartHeight" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="2" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="StartSpeed" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="3" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="EndTime" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="4" TextWrapping="Wrap" Text="25" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="PointNumber" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="5" TextWrapping="Wrap" Text="25" VerticalAlignment="Top" Width="50" PreviewTextInput="IntTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+
+                    <CheckBox x:Name="GIsConst" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0"></CheckBox>
+
+                    <TextBox x:Name="BallRadius" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="7" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="BallMass" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="8" TextWrapping="Wrap" Text="0.20" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="EnvDensity" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="9" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+                    <TextBox x:Name="EnvViscosity" Grid.Column="2" HorizontalAlignment="Center" Height="27" Grid.Row="10" TextWrapping="Wrap" Text="0.1" VerticalAlignment="Top" Width="50" PreviewTextInput="DoubleTBPreviewTextInput" TextChanged="TB_TextChanged" PreviewKeyDown="TB_PreviewKeyDown"/>
+
+                    <CheckBox x:Name="Archimedes" Grid.Column="2" Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0"></CheckBox>
+                    <CheckBox x:Name="LiquidFriction" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0" IsEnabled="{qc:Binding '!$P', P={Binding ElementName=GasDrag, Path=IsChecked}}"></CheckBox>
+                    <CheckBox x:Name="GasDrag" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0" IsEnabled="{qc:Binding '!$P', P={Binding ElementName=LiquidFriction, Path=IsChecked}}"></CheckBox>
+
+                    <Label Grid.Row="7" Grid.Column="3" Content="{Binding ElementName=BallRadius, Path=Text, Converter={StaticResource StringFormatConverter}, ConverterParameter=Объем шара: {0:e3} }"></Label>
+                    <Label Content="Плотность шара" Grid.Row="8" Grid.Column="3"></Label>
+                </Grid>
+            </metro:MetroTabItem>
             <metro:MetroTabItem Header="График"></metro:MetroTabItem>
-            <metro:MetroTabItem Header="Данные"></metro:MetroTabItem>
+            <metro:MetroTabItem Header="Данные">
+                
+            </metro:MetroTabItem>
         </dragablz:TabablzControl>
      </dockablz:Layout>
 </metro:MetroWindow>
