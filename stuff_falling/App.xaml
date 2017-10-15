@@ -50,6 +50,20 @@
             <!-- Dragablz Material Design -->
             <Style TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" />
 
+            <Style TargetType="StackPanel" x:Key="GlobalStackPanelStyle">
+                <Setter Property="Background" Value="{DynamicResource IdealForegroundColorBrush}"/>
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect 
+                            BlurRadius="8"
+                            ShadowDepth="1"
+                            Direction="270"
+                            Color="Gray"
+                            RenderingBias="Quality"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

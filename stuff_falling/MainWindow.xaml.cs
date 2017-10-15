@@ -31,12 +31,10 @@ namespace stuff_falling
             InitializeComponent();
             Model.CalculationCompleted += OnCalculationComplete;
             DataContext = this;
-            Series = HeightSeries;
+            Update();
         }
 
         public List<string> Labels { get; set; } = new List<string>();
-
-        public SeriesCollection Series { get; set; } = new SeriesCollection();
 
         public SeriesCollection HeightSeries { get; set; } = new SeriesCollection();
         public SeriesCollection SpeedSeries { get; set; } = new SeriesCollection();
@@ -46,23 +44,21 @@ namespace stuff_falling
 
         private void UpdateSeries(SeriesCollection series, List<double> values)
         {
-            LineSeries lineSeries = new LineSeries
+            if (series.Count > 0)
+                series.RemoveAt(series.Count - 1);
+            series.Add(new LineSeries
             {
-                Title = (Series.Count + 1).ToString(),
+                Title = "Эксперимент №" + (series.Count + 1).ToString(),
                 Values = new ChartValues<double>(values),
                 LineSmoothness = 0,
                 PointGeometry = null,
                 Fill = new SolidColorBrush()
-            };
-            if (series.Count > 0)
-                series[series.Count - 1] = lineSeries;
-            else
-                series.Add(lineSeries);
+            });
+            series.Last().InitializeColors();
         } 
 
         private void UpdateData(Model.Result result)
         {
-            Series.Clear();
             UpdateSeries(HeightSeries, result.Height);
             UpdateSeries(SpeedSeries, result.Speed);
             UpdateSeries(AccelerationSeries, result.Acceleration);
@@ -132,7 +128,7 @@ namespace stuff_falling
             e.Handled = e.Key == Key.Space;
         }
 
-        private void CheckboxOnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void CheckboxOnIsEnabledChanged(object sender, EventArgs e)
         {
             if (this.IsLoaded)
             {
@@ -142,13 +138,20 @@ namespace stuff_falling
 
         private void ListBox_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var item = ItemsControl.ContainerFromElement(ListBox, (DependencyObject)e.OriginalSource) as ListBoxItem;
+            var item = ItemsControl.ContainerFromElement((ItemsControl)sender, (DependencyObject)e.OriginalSource) as ListBoxItem;
             if (item == null)
                 return;
             var series = (LineSeries)item.Content;
             series.Visibility = series.Visibility == Visibility.Visible
                 ? Visibility.Hidden
                 : Visibility.Visible;
+        }
+
+        private void SaveExperimentButton_Click(object sender, RoutedEventArgs e)
+        {
+            HeightSeries.Insert(HeightSeries.Count - 1, HeightSeries.Last());
+            SpeedSeries.Insert(SpeedSeries.Count - 1, SpeedSeries.Last());
+            AccelerationSeries.Insert(AccelerationSeries.Count - 1, AccelerationSeries.Last());
         }
     }
 
