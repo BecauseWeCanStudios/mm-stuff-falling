@@ -55,10 +55,12 @@ namespace stuff_falling
                             archimedes = y => parameters.EnviromentDensity / sphereDensity * 9.81 / Math.Pow(1 - y / 6371000, 2);
                         break;
                     case Forces.Drag:
-                        drag = v => parameters.EnviromentViscosity / parameters.SphereMass * v * v;
+                        drag = v => parameters.EnviromentDensity * Math.PI * 
+                            Math.Pow(parameters.SphereRadius, 2) * v * v / parameters.SphereMass;
                         break;
                     case Forces.Viscosity:
-                        drag = v => parameters.EnviromentViscosity / parameters.SphereMass * v;
+                        drag = v => 6 * Math.PI * parameters.EnviromentViscosity * parameters.EnviromentDensity * 
+                            parameters.SphereRadius * v / parameters.SphereMass;
                         break;
                     default:
                         throw new Exception("How did you get here?!?!?!?!");
