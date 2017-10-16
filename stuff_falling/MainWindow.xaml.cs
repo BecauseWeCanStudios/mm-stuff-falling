@@ -74,7 +74,7 @@ namespace stuff_falling
                 Ellipsies.Add(new Ellipse() { Width = 30, Height = 30 });
                 Canvas.Children.Add(Ellipsies.Last());
                 Canvas.SetLeft(Canvas.Children[Canvas.Children.Count - 1], 625);
-                Canvas.SetTop(Canvas.Children[Canvas.Children.Count - 1], 115);
+                Canvas.SetTop(Canvas.Children[Canvas.Children.Count - 1], 575);
                 Animations.Add(new DoubleAnimationUsingKeyFrames());
                 AddEllipse = false;
             }
@@ -187,30 +187,44 @@ namespace stuff_falling
             Update();
         }
 
+        private void SetAnim()
+        {
+            double height = -1;
+            foreach (var it in HeightSeries)
+                foreach (double h in it.Values)
+                    if (h > height)
+                        height = h;
+            for (int i = 0; i < Ellipsies.Count; ++i)
+            {
+                DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
+                foreach (double it in HeightSeries[i].Values)
+                    anim.KeyFrames.Add(new LinearDoubleKeyFrame(575 - 460 * it / height));
+                anim.Duration = new Duration(new TimeSpan(0, 0, 5));
+                if (i == 0)
+                    anim.Completed += AnimEnd;
+                Animations[i] = anim;
+                Canvas.SetTop(Ellipsies[i], Animations[i].KeyFrames[0].Value);
+            }
+            UpdateAnimation = false;
+        }
+
+        private void AnimEnd(object sender, EventArgs e)
+        {
+            StartAnimationButton.IsEnabled = true;
+            foreach (var it in Ellipsies)
+                it.BeginAnimation(Canvas.TopProperty, null);
+        }
+
         private void StartAnimationButton_Click(object sender, RoutedEventArgs e)
         {
+            Button button = (Button)sender;
             if (UpdateAnimation)
-            {
-                double height = -1;
-                foreach (var it in HeightSeries)
-                    foreach (double h in it.Values)
-                        if (h > height)
-                            height = h;
-                for (int i = 0; i < Ellipsies.Count; ++i)
-                {
-                    DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
-                    foreach (double it in HeightSeries[i].Values)
-                    {
-                        anim.KeyFrames.Add(new LinearDoubleKeyFrame(575 - 455 * it / height));
-                    }
-                    anim.Duration = new Duration(new TimeSpan(0, 0, 5));
-                    Animations[i] = anim;
-                    Canvas.SetTop(Ellipsies[i], anim.KeyFrames[0].Value);
-                }
-            }
+                SetAnim();
             for (int i = 0; i < Ellipsies.Count; ++i)
                 Ellipsies[i].BeginAnimation(Canvas.TopProperty, Animations[i]);
+            button.IsEnabled = false;
         }
+
     }
 
     [ValueConversion(typeof(object), typeof(string))]
