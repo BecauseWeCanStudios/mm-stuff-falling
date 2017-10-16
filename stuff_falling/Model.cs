@@ -13,17 +13,48 @@ namespace stuff_falling
 
         public class Parameters
         {
+            public int Number;
             public List<Forces> Forces = new List<Forces>();
-            public double Height;
-            public double Speed;
-            public double EndTime;
-            public double SegmentCount;
-            public bool IsConstGravitationalAcceleration;
-            public double SphereRadius;
-            public double SphereMass;
-            public double EnviromentDensity;
-            public double EnviromentViscosity;
-        }
+            public double Height { get; set; }
+            public double Speed { get; set; }
+            public double EndTime { get; set; }
+            public double SegmentCount { get; set; }
+            public bool IsConstGravitationalAcceleration { get; set; }
+            public double SphereRadius { get; set; }
+            public double SphereMass { get; set; }
+            public double EnviromentDensity { get; set; }
+            public double EnviromentViscosity { get; set; }
+            public double SphereVolume { get { return 4.0 / 3.0 * Math.PI * Math.Pow(SphereRadius, 3); } }
+            public double SphereDensity { get { return SphereMass / SphereVolume; } }
+            public double CrossSectionArea { get { return Math.PI * Math.Pow(SphereRadius, 2); } }
+            public double ArchimedesCoeff { get { return EnviromentDensity / SphereDensity; } }
+            public double DragCoeff { get { return EnviromentDensity * CrossSectionArea; } }
+            public double ViscosityCoeff { get { return 6 * Math.PI * EnviromentViscosity * EnviromentDensity * SphereRadius; } }
+
+            override public string ToString() {
+                string result = $"Эксперимент №{Number + 1}:\n" +
+                                $"Начальные условия: y0={Height:N3}, v0={Speed:N3}\n" +
+                                $"Ускорение свободного падения: g={(IsConstGravitationalAcceleration ? "9.81" : "g(y)")}\n" +
+                                 "Действующие силы:\n" +
+                                 "1) Сила тяжести\n";
+                for (int i = 0; i < Forces.Count; ++i)
+                    switch(Forces[i])
+                    {
+                        case Model.Forces.Archimedes:
+                            result += $"{i + 2}) Сила Архимеда (kA={ArchimedesCoeff:N3}, ρ(тела)={SphereDensity:N3}, ρ(среды)={EnviromentDensity:N3}, V={SphereVolume:N3}, R={SphereRadius:N3})\n";
+                            break;
+                        case Model.Forces.Drag:
+                            result += $"{i + 2}) Сила трения (K2={DragCoeff / SphereMass:N3}, k2={DragCoeff:N3}, m={SphereMass:N3}, S={CrossSectionArea:N3}, ρ(среды){EnviromentDensity:N3})\n";
+                            break;
+                        case Model.Forces.Viscosity:
+                            result += $"{i + 2}) Сила вязкого трения (K1={ViscosityCoeff / SphereMass:N3}, k1={ViscosityCoeff:N3}, m={SphereMass:N3}, C=2, R={SphereRadius:N3}, ρ(среды)={EnviromentDensity:N3}, вязкость={EnviromentViscosity:N3})\n";
+                            break;
+                        default:
+                            throw new Exception("How did you get here???");
+                    }
+                return result;
+            }
+    }
 
         public class Result : EventArgs
         {
@@ -42,25 +73,21 @@ namespace stuff_falling
                 gravity = y => -9.81 / Math.Pow(1 + y / 6371000, 2);
             Func<double, double> archimedes = (y) => 0;
             Func<double, double> drag = (v) => 0;
-            double sphereVolume = 4.0 / 3.0 * Math.PI * Math.Pow(parameters.SphereRadius, 3);
-            double sphereDensity = parameters.SphereMass / sphereVolume;
             foreach (var force in parameters.Forces)
             {
                 switch(force)
                 {
                     case Forces.Archimedes:
                         if (parameters.IsConstGravitationalAcceleration)
-                            archimedes = y => parameters.EnviromentDensity / sphereDensity * 9.81;
+                            archimedes = y => parameters.ArchimedesCoeff * 9.81;
                         else 
-                            archimedes = y => parameters.EnviromentDensity / sphereDensity * 9.81 / Math.Pow(1 - y / 6371000, 2);
+                            archimedes = y => parameters.ArchimedesCoeff * 9.81 / Math.Pow(1 - y / 6371000, 2);
                         break;
                     case Forces.Drag:
-                        drag = v => parameters.EnviromentDensity * Math.PI * 
-                            Math.Pow(parameters.SphereRadius, 2) * v * v / parameters.SphereMass;
+                        drag = v => parameters.DragCoeff * v * v / parameters.SphereMass;
                         break;
                     case Forces.Viscosity:
-                        drag = v => 6 * Math.PI * parameters.EnviromentViscosity * parameters.EnviromentDensity * 
-                            parameters.SphereRadius * v / parameters.SphereMass;
+                        drag = v => parameters.ViscosityCoeff * v / parameters.SphereMass;
                         break;
                     default:
                         throw new Exception("How did you get here?!?!?!?!");

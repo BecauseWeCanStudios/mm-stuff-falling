@@ -47,6 +47,8 @@ namespace stuff_falling
         public SeriesCollection SpeedSeries { get; set; } = new SeriesCollection();
         public SeriesCollection AccelerationSeries { get; set; } = new SeriesCollection();
 
+        public List<Model.Parameters> Parameters { get; set; } = new List<Model.Parameters>();
+
         private List<Ellipse> Ellipsies = new List<Ellipse>();
         private List<DoubleAnimationUsingKeyFrames> Animations = new List<DoubleAnimationUsingKeyFrames>();
 
@@ -144,8 +146,9 @@ namespace stuff_falling
                 forces.Add(Model.Forces.Viscosity);
             if (GasDrag.IsChecked.Value)
                 forces.Add(Model.Forces.Drag);
-            Model.BeginCalculate(new Model.Parameters()
+            Model.Parameters parameters = new Model.Parameters()
             {
+                Number = index,
                 Forces = forces,
                 Height = Convert.ToDouble(PassDefaultIfEmpty(StartHeight.Text)),
                 Speed = Convert.ToDouble(PassDefaultIfEmpty(StartSpeed.Text)),
@@ -156,7 +159,12 @@ namespace stuff_falling
                 SphereMass = Convert.ToDouble(PassDefaultIfEmpty(BallMass.Text)),
                 EnviromentDensity = Convert.ToDouble(PassDefaultIfEmpty(EnvDensity.Text)),
                 EnviromentViscosity = Convert.ToDouble(PassDefaultIfEmpty(EnvViscosity.Text))
-            });
+            };
+            if (Parameters.Count == 0)
+                Parameters.Add(parameters);
+            else
+                Parameters[Parameters.Count - 1] = parameters;
+            Model.BeginCalculate(parameters);
         }
 
         private void DoubleTBPreviewTextInput(object sender, TextCompositionEventArgs e)
