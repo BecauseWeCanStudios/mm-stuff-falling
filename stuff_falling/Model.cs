@@ -42,7 +42,7 @@ namespace stuff_falling
                 gravity = y => -9.81 / Math.Pow(1 + y / 6371000, 2);
             Func<double, double> archimedes = (y) => 0;
             Func<double, double> drag = (v) => 0;
-            double sphereVolume = 4 / 3 * Math.PI * Math.Pow(parameters.SphereRadius, 3);
+            double sphereVolume = 4.0 / 3.0 * Math.PI * Math.Pow(parameters.SphereRadius, 3);
             double sphereDensity = parameters.SphereMass / sphereVolume;
             foreach (var force in parameters.Forces)
             {
