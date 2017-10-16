@@ -259,6 +259,19 @@ namespace stuff_falling
             button.IsEnabled = false;
         }
 
+        private void TRTB_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            HeightSeries.Clear();
+            SpeedSeries.Clear();
+            AccelerationSeries.Clear();
+            for (int i = 0; i < Ellipsies.Count(); ++i)
+                Canvas.Children.RemoveAt(Canvas.Children.Count - 1);
+            Ellipsies.Clear();
+            Animations.Clear();
+            AddEllipse = true;
+            index = 0;
+            TB_TextChanged(sender, e);
+        }
     }
 
     [ValueConversion(typeof(object), typeof(string))]
