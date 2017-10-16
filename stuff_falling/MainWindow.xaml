@@ -29,7 +29,7 @@
         <local:RadiusMassToDensityConverter x:Key="RadiusMassToDensityConverter"></local:RadiusMassToDensityConverter>
     </metro:MetroWindow.Resources>
     <dockablz:Layout Partition="{StaticResource Partition}">
-        <dragablz:TabablzControl ConsolidateOrphanedItems="True">
+        <dragablz:TabablzControl ConsolidateOrphanedItems="True" SelectionChanged="TabablzControl_SelectionChanged">
             <dragablz:TabablzControl.InterTabController>
                 <dragablz:InterTabController Partition="{StaticResource Partition}" />
             </dragablz:TabablzControl.InterTabController>
@@ -190,7 +190,7 @@
 
                 </Grid>
             </metro:MetroTabItem>
-            <metro:MetroTabItem Header="Данные">
+            <metro:MetroTabItem Header="Данные" Name="DataTab">
                 <Grid ShowGridLines="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>

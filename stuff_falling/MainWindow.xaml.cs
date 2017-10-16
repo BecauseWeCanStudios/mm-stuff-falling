@@ -52,9 +52,12 @@ namespace stuff_falling
         private List<Ellipse> Ellipsies = new List<Ellipse>();
         private List<DoubleAnimationUsingKeyFrames> Animations = new List<DoubleAnimationUsingKeyFrames>();
 
+        private List<double> Times = new List<double>();
+
         private bool AddEllipse = true;
         private bool UpdateAnimation = true;
-        private int index = 0;
+        private int colorIndex = 0;
+        private bool DataChanged = true;
 
         private delegate void UpdateDelegate(Model.Result result);
 
@@ -64,12 +67,12 @@ namespace stuff_falling
                 series.RemoveAt(series.Count - 1);
             series.Add(new LineSeries
             {
-                Title = "Эксперимент №" + (series.Count + 1).ToString(),
+                Title = "Эксперимент №" + (colorIndex + 1).ToString(),
                 Values = new ChartValues<double>(values),
                 LineSmoothness = 0,
                 PointGeometry = null,
                 Fill = new SolidColorBrush(),
-                Stroke = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))])
+                Stroke = new SolidColorBrush(Chart.Colors[(int)(colorIndex - Chart.Colors.Count * Math.Truncate(colorIndex / (double)Chart.Colors.Count))])
             });
         } 
 
@@ -89,38 +92,10 @@ namespace stuff_falling
             UpdateSeries(AccelerationSeries, result.Acceleration);
             Labels.Clear();
             Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
-            Ellipsies.Last().Fill = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))]);
+            Ellipsies.Last().Fill = new SolidColorBrush(Chart.Colors[(int)(colorIndex - Chart.Colors.Count * Math.Truncate(colorIndex / (double)Chart.Colors.Count))]);
             UpdateAnimation = true;
-            // Update table
-            Data.Clear();
-            Data.Columns.Clear();
-            Data.Columns.Add("k");
-            Data.Columns.Add("t__k");
-            for (var col = 0; col < HeightSeries.Count; ++col)
-            {
-                Data.Columns.Add($"y__{col}");
-                Data.Columns.Add($"v__{col}");
-                Data.Columns.Add($"a__{col}");
-            }
-            for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
-            {
-                List<object> temp = new List<object> ()
-                {
-                    row,
-                    result.Time[row],
-                };
-                for (var col = 0; col < HeightSeries.Count; ++col)
-                {
-                    temp.AddRange(new[] {
-                        HeightSeries[col].ActualValues[row],
-                        SpeedSeries[col].ActualValues[row],
-                        AccelerationSeries[col].ActualValues[row],
-                    });
-                }
-                Data.Rows.Add(temp.ToArray());
-            }
-            Grid.ItemsSource = null;
-            Grid.ItemsSource = Data.AsDataView();
+            DataChanged = true;
+            Times = result.Time;
         }
 
         private void OnCalculationComplete(object sender, Model.Result result)
@@ -148,7 +123,7 @@ namespace stuff_falling
                 forces.Add(Model.Forces.Drag);
             Model.Parameters parameters = new Model.Parameters()
             {
-                Number = index,
+                Number = colorIndex,
                 Forces = forces,
                 Height = Convert.ToDouble(PassDefaultIfEmpty(StartHeight.Text)),
                 Speed = Convert.ToDouble(PassDefaultIfEmpty(StartSpeed.Text)),
@@ -214,9 +189,32 @@ namespace stuff_falling
             if (item == null)
                 return;
             var series = (LineSeries)item.Content;
-            series.Visibility = series.Visibility == Visibility.Visible
-                ? Visibility.Hidden
-                : Visibility.Visible;
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                series.Visibility = series.Visibility == Visibility.Visible
+                    ? Visibility.Hidden
+                    : Visibility.Visible;
+            }
+            else if (e.RightButton == MouseButtonState.Pressed)
+            {
+                int index = -1;
+                if (HeightRadioButton.IsChecked.Value)
+                    index = HeightSeries.IndexOf(series);
+                else if (SpeedRadioButton.IsChecked.Value)
+                    index = SpeedSeries.IndexOf(series);
+                else
+                    index = AccelerationSeries.IndexOf(series);
+                if (index == HeightSeries.Count - 1)
+                    return;
+                HeightSeries.RemoveAt(index);
+                SpeedSeries.RemoveAt(index);
+                AccelerationSeries.RemoveAt(index);
+                Canvas.Children.Remove(Ellipsies[index]);
+                Ellipsies.RemoveAt(index);
+                Animations.RemoveAt(index);
+                Parameters.RemoveAt(index);
+                UpdateAnimation = true;
+            }
         }
 
         private void SaveExperimentButton_Click(object sender, RoutedEventArgs e)
@@ -224,8 +222,9 @@ namespace stuff_falling
             HeightSeries.Insert(HeightSeries.Count - 1, HeightSeries.Last());
             SpeedSeries.Insert(SpeedSeries.Count - 1, SpeedSeries.Last());
             AccelerationSeries.Insert(AccelerationSeries.Count - 1, AccelerationSeries.Last());
+            Parameters.Insert(Parameters.Count - 1, Parameters.Last());
             AddEllipse = true;
-            ++index;
+            ++colorIndex;
             Update();
         }
 
@@ -277,8 +276,48 @@ namespace stuff_falling
             Ellipsies.Clear();
             Animations.Clear();
             AddEllipse = true;
-            index = 0;
+            colorIndex = 0;
             TB_TextChanged(sender, e);
+        }
+
+        private void TabablzControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataTab.IsSelected)
+            {
+                if (!DataChanged)
+                    return;
+                DataChanged = false;
+                // Update table
+                Data.Clear();
+                Data.Columns.Clear();
+                Data.Columns.Add("k");
+                Data.Columns.Add("t__k");
+                for (var col = 0; col < HeightSeries.Count; ++col)
+                {
+                    Data.Columns.Add($"y__{Parameters[col].Number + 1}");
+                    Data.Columns.Add($"v__{Parameters[col].Number + 1}");
+                    Data.Columns.Add($"a__{Parameters[col].Number + 1}");
+                }
+                for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
+                {
+                    List<object> temp = new List<object>()
+                    {
+                        row,
+                        Times[row],
+                    };
+                    for (var col = 0; col < HeightSeries.Count; ++col)
+                        {
+                            temp.AddRange(new[] {
+                            $"{HeightSeries[col].Values[row]:N3}",
+                            $"{SpeedSeries[col].Values[row]:N3}",
+                            $"{AccelerationSeries[col].Values[row]:N3}",
+                        });
+                    }
+                    Data.Rows.Add(temp.ToArray());
+                }
+                Grid.ItemsSource = null;
+                Grid.ItemsSource = Data.AsDataView();
+            }
         }
     }
 
