@@ -94,28 +94,28 @@ namespace stuff_falling
             Data.Columns.Clear();
             Data.Columns.Add("k");
             Data.Columns.Add("t__k");
-            for (var i = 0; i <= index; ++i)
+            for (var col = 0; col < HeightSeries.Count; ++col)
             {
-                Data.Columns.Add($"y__{i}");
-                Data.Columns.Add($"v__{i}");
-                Data.Columns.Add($"a__{i}");
-                for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
+                Data.Columns.Add($"y__{col}");
+                Data.Columns.Add($"v__{col}");
+                Data.Columns.Add($"a__{col}");
+            }
+            for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
+            {
+                List<object> temp = new List<object> ()
                 {
-                    List<object> temp = new List<object> ()
-                    {
-                        row,
-                        result.Time[row],
-                    };
-                    for (var col = 0; col < HeightSeries.Count; ++col)
-                    {
-                        temp.AddRange(new[] {
-                            HeightSeries[col].ActualValues[row],
-                            SpeedSeries[col].ActualValues[row],
-                            AccelerationSeries[col].ActualValues[row],
-                        });
-                    }
-                    Data.Rows.Add(temp);
+                    row,
+                    result.Time[row],
+                };
+                for (var col = 0; col < HeightSeries.Count; ++col)
+                {
+                    temp.AddRange(new[] {
+                        HeightSeries[col].ActualValues[row],
+                        SpeedSeries[col].ActualValues[row],
+                        AccelerationSeries[col].ActualValues[row],
+                    });
                 }
+                Data.Rows.Add(temp.ToArray());
             }
             Grid.ItemsSource = null;
             Grid.ItemsSource = Data.AsDataView();

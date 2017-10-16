@@ -100,6 +100,7 @@ namespace stuff_falling
                     result.Speed[result.Speed.Count - 1] = 0;
                 }
             }
+            result.Acceleration.Add(result.Acceleration.Last());
             CalculationCompleted(null, result);        
         }
 
