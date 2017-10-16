@@ -200,13 +200,7 @@
                         <RowDefinition Height="400"></RowDefinition>
                         <RowDefinition Height="30"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <ListView Grid.Column="0" Grid.Row="0" x:Name="DataLV">
-                        <ListView.View>
-                            <GridView x:Name="DataGV">
-
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+                    <DataGrid x:Name="Grid" Grid.Column="0" Grid.Row="0" AutoGenerateColumns="True" IsReadOnly="True"></DataGrid>
                     <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left">Сохранить</Button>
                 </Grid>
             </metro:MetroTabItem>

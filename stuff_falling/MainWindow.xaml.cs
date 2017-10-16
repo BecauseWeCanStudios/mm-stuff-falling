@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -36,6 +38,8 @@ namespace stuff_falling
             DataContext = this;
             Update();
         }
+
+        public DataTable Data { get; set; } = new DataTable();
 
         public List<string> Labels { get; set; } = new List<string>();
 
@@ -85,6 +89,36 @@ namespace stuff_falling
             Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
             Ellipsies.Last().Fill = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))]);
             UpdateAnimation = true;
+            // Update table
+            Data.Clear();
+            Data.Columns.Clear();
+            Data.Columns.Add("k");
+            Data.Columns.Add("t__k");
+            for (var i = 0; i <= index; ++i)
+            {
+                Data.Columns.Add($"y__{i}");
+                Data.Columns.Add($"v__{i}");
+                Data.Columns.Add($"a__{i}");
+                for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
+                {
+                    List<object> temp = new List<object> ()
+                    {
+                        row,
+                        result.Time[row],
+                    };
+                    for (var col = 0; col < HeightSeries.Count; ++col)
+                    {
+                        temp.AddRange(new[] {
+                            HeightSeries[col].ActualValues[row],
+                            SpeedSeries[col].ActualValues[row],
+                            AccelerationSeries[col].ActualValues[row],
+                        });
+                    }
+                    Data.Rows.Add(temp);
+                }
+            }
+            Grid.ItemsSource = null;
+            Grid.ItemsSource = Data.AsDataView();
         }
 
         private void OnCalculationComplete(object sender, Model.Result result)
