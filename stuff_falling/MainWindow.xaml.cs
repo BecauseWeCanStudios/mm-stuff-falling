@@ -47,6 +47,7 @@ namespace stuff_falling
         private List<DoubleAnimationUsingKeyFrames> Animations = new List<DoubleAnimationUsingKeyFrames>();
 
         private bool AddEllipse = true;
+        private bool UpdateAnimation = true;
         private int index = 0;
 
         private delegate void UpdateDelegate(Model.Result result);
@@ -61,9 +62,9 @@ namespace stuff_falling
                 Values = new ChartValues<double>(values),
                 LineSmoothness = 0,
                 PointGeometry = null,
-                Fill = new SolidColorBrush()
+                Fill = new SolidColorBrush(),
+                Stroke = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))])
             });
-            series.Last().InitializeColors();
         } 
 
         private void UpdateData(Model.Result result)
@@ -83,15 +84,7 @@ namespace stuff_falling
             Labels.Clear();
             Labels.AddRange(result.Time.ConvertAll(new Converter<double, string>((double x) => { return x.ToString(); })));
             Ellipsies.Last().Fill = new SolidColorBrush(Chart.Colors[(int)(index - Chart.Colors.Count * Math.Truncate(index / (double)Chart.Colors.Count))]);
-            DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
-            double height = Convert.ToDouble(PassDefaultIfEmpty(StartHeight.Text));
-            foreach (var it in HeightSeries.Last().Values)
-            {
-                anim.KeyFrames.Add(new LinearDoubleKeyFrame(575 - 455 * (double)it / height));
-            }
-            anim.Duration = new Duration(new TimeSpan(0, 0, 5));
-            Animations[Animations.Count - 1] = anim;
-            ++index;
+            UpdateAnimation = true;
         }
 
         private void OnCalculationComplete(object sender, Model.Result result)
@@ -189,14 +182,32 @@ namespace stuff_falling
             HeightSeries.Insert(HeightSeries.Count - 1, HeightSeries.Last());
             SpeedSeries.Insert(SpeedSeries.Count - 1, SpeedSeries.Last());
             AccelerationSeries.Insert(AccelerationSeries.Count - 1, AccelerationSeries.Last());
-            Ellipsies.Insert(Ellipsies.Count - 1, Ellipsies.Last());
-            Animations.Insert(Animations.Count - 1, Animations.Last());
             AddEllipse = true;
+            ++index;
             Update();
         }
 
         private void StartAnimationButton_Click(object sender, RoutedEventArgs e)
         {
+            if (UpdateAnimation)
+            {
+                double height = -1;
+                foreach (var it in HeightSeries)
+                    foreach (double h in it.Values)
+                        if (h > height)
+                            height = h;
+                for (int i = 0; i < Ellipsies.Count; ++i)
+                {
+                    DoubleAnimationUsingKeyFrames anim = new DoubleAnimationUsingKeyFrames();
+                    foreach (double it in HeightSeries[i].Values)
+                    {
+                        anim.KeyFrames.Add(new LinearDoubleKeyFrame(575 - 455 * it / height));
+                    }
+                    anim.Duration = new Duration(new TimeSpan(0, 0, 5));
+                    Animations[i] = anim;
+                    Canvas.SetTop(Ellipsies[i], anim.KeyFrames[0].Value);
+                }
+            }
             for (int i = 0; i < Ellipsies.Count; ++i)
                 Ellipsies[i].BeginAnimation(Canvas.TopProperty, Animations[i]);
         }
