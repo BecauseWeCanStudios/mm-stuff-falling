@@ -194,15 +194,19 @@
                 <Grid ShowGridLines="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="300"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="35"></RowDefinition>
                         <RowDefinition></RowDefinition>
-                        <RowDefinition Height="200"></RowDefinition>
                     </Grid.RowDefinitions>
                     <DataGrid x:Name="Grid" Grid.Column="0" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"></DataGrid>
-                    <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="0">Сохранить</Button>
-                    <ListBox x:Name="ExperimentList" Grid.Column="0" Grid.Row="2">
+                    <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">Сохранить</Button>
+
+                    <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"></GridSplitter>
+
+                    <ListBox x:Name="ExperimentList" Grid.Column="2" Grid.Row="1">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}">
                                 <Setter Property="Focusable" Value="False"/>
@@ -211,7 +215,7 @@
                     </ListBox>
                 </Grid>
             </metro:MetroTabItem>
-            <metro:MetroTabItem Header="Анимация">
+            <metro:MetroTabItem Header="Анимация" Name="AnimationTab">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"></RowDefinition>

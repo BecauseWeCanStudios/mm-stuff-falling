@@ -96,6 +96,10 @@ namespace stuff_falling
             UpdateAnimation = true;
             DataChanged = true;
             Times = result.Time;
+            if (DataTab.IsSelected)
+                UpdateDataTab();
+            if (AnimationTab.IsSelected)
+                SetAnim();
         }
 
         private void OnCalculationComplete(object sender, Model.Result result)
@@ -281,46 +285,50 @@ namespace stuff_falling
             TB_TextChanged(sender, e);
         }
 
-        private void TabablzControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void UpdateDataTab()
         {
-            if (DataTab.IsSelected)
+            if (!DataChanged)
+                return;
+            DataChanged = false;
+            Data.Clear();
+            Data.Columns.Clear();
+            Data.Columns.Add("k");
+            Data.Columns.Add("t__k");
+            for (var col = 0; col < HeightSeries.Count; ++col)
             {
-                if (!DataChanged)
-                    return;
-                DataChanged = false;
-                // Update table
-                Data.Clear();
-                Data.Columns.Clear();
-                Data.Columns.Add("k");
-                Data.Columns.Add("t__k");
-                for (var col = 0; col < HeightSeries.Count; ++col)
-                {
-                    Data.Columns.Add($"y__{Parameters[col].Number + 1}");
-                    Data.Columns.Add($"v__{Parameters[col].Number + 1}");
-                    Data.Columns.Add($"a__{Parameters[col].Number + 1}");
-                }
-                for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
-                {
-                    List<object> temp = new List<object>()
+                Data.Columns.Add($"y__{Parameters[col].Number + 1}");
+                Data.Columns.Add($"v__{Parameters[col].Number + 1}");
+                Data.Columns.Add($"a__{Parameters[col].Number + 1}");
+            }
+            for (var row = 0; row < HeightSeries[0].ActualValues.Count; ++row)
+            {
+                List<object> temp = new List<object>()
                     {
                         row,
                         Times[row],
                     };
-                    for (var col = 0; col < HeightSeries.Count; ++col)
-                        {
-                            temp.AddRange(new[] {
+                for (var col = 0; col < HeightSeries.Count; ++col)
+                {
+                    temp.AddRange(new[] {
                             $"{HeightSeries[col].Values[row]:N3}",
                             $"{SpeedSeries[col].Values[row]:N3}",
                             $"{AccelerationSeries[col].Values[row]:N3}",
                         });
-                    }
-                    Data.Rows.Add(temp.ToArray());
                 }
-                Grid.ItemsSource = null;
-                Grid.ItemsSource = Data.AsDataView();
-                ExperimentList.ItemsSource = null;
-                ExperimentList.ItemsSource = Parameters;
+                Data.Rows.Add(temp.ToArray());
             }
+            Grid.ItemsSource = null;
+            Grid.ItemsSource = Data.AsDataView();
+            ExperimentList.ItemsSource = null;
+            ExperimentList.ItemsSource = Parameters;
+        }
+
+        private void TabablzControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataTab.IsSelected)
+                UpdateDataTab();
+            if (AnimationTab.IsSelected)
+                SetAnim();
         }
     }
 
