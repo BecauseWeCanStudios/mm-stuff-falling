@@ -214,6 +214,7 @@ namespace stuff_falling
                 Animations.RemoveAt(index);
                 Parameters.RemoveAt(index);
                 UpdateAnimation = true;
+                DataChanged = true;
             }
         }
 
@@ -317,6 +318,8 @@ namespace stuff_falling
                 }
                 Grid.ItemsSource = null;
                 Grid.ItemsSource = Data.AsDataView();
+                ExperimentList.ItemsSource = null;
+                ExperimentList.ItemsSource = Parameters;
             }
         }
     }

@@ -202,6 +202,13 @@
                     </Grid.RowDefinitions>
                     <DataGrid x:Name="Grid" Grid.Column="0" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"></DataGrid>
                     <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="0">Сохранить</Button>
+                    <ListBox x:Name="ExperimentList" Grid.Column="0" Grid.Row="2">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
                 </Grid>
             </metro:MetroTabItem>
             <metro:MetroTabItem Header="Анимация">
