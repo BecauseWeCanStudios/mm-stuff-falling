@@ -191,7 +191,7 @@
                 </Grid>
             </metro:MetroTabItem>
             <metro:MetroTabItem Header="Данные" Name="DataTab">
-                <Grid ShowGridLines="True">
+                <Grid ShowGridLines="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -202,7 +202,7 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
                     <DataGrid x:Name="Grid" Grid.Column="0" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"></DataGrid>
-                    <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">Сохранить</Button>
+                    <Button x:Name="SaveButton" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Click="SaveButton_OnClick">Сохранить</Button>
 
                     <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"></GridSplitter>
 

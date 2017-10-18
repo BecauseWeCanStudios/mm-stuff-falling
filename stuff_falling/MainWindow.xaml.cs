@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,6 +25,8 @@ using LiveCharts.Charts;
 using MahApps.Metro.Controls;
 using LiveCharts.Wpf.Charts.Base;
 using System.Windows.Media.Animation;
+using CsvHelper;
+using Microsoft.Win32;
 
 namespace stuff_falling
 {
@@ -329,6 +333,30 @@ namespace stuff_falling
                 UpdateDataTab();
             if (AnimationTab.IsSelected)
                 SetAnim();
+        }
+
+        private void SaveButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "CSV (*.csv)|*.csv";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                StreamWriter file = new StreamWriter(saveFileDialog.FileName);
+                var csv = new CsvWriter(file);
+                foreach (DataColumn col in Data.Columns)
+                {
+                    csv.WriteField(col.ColumnName);
+                }
+                csv.NextRecord();
+                foreach (DataRow row in Data.Rows)
+                {
+                    for (var i = 0; i < Data.Columns.Count; i++)
+                    {
+                        csv.WriteField(row[i]);
+                    }
+                    csv.NextRecord();
+                }
+            }
         }
     }
 
